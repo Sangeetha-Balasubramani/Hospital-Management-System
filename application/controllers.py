@@ -82,7 +82,6 @@ def add_doctor():
         dob=request.form.get('dob')
         gender=request.form.get('gender')
         department_id=request.form.get('department_id')
-        department_id=int(department_id)
         experience=request.form.get('experience')
 
         user=User(username=username,email=email,password=password,contact_number=contact_number,dob=dob,gender=gender,role='doctor',department_id=department_id,experience=experience)
@@ -110,6 +109,12 @@ def edit_doctor(doctor_id):
 @app.route('/delete_doctor/<int:doctor_id>')
 def delete_doctor(doctor_id):        
     this_user=User.query.get(doctor_id)
+    if not this_user:
+        return redirect('/admin')
+    Appointment.query.filter_by(doctor_id=doctor_id).delete()
+    treatments=Treatment.query.filter_by(doctor_id=doctor_id).all()
+    for treatment in treatments:
+        treatment.doctor_id=None
     db.session.delete(this_user)
     db.session.commit()
     return redirect('/admin')
