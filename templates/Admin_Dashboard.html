@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        #main,#canvas{
+            height:auto !important;
+        }
+        #canvas{
+            width:70%;
+        }
+        td{
+            text-align:center;
+            vertical-align:middle;
+        }
+        .badge{
+            display:inline-block; 
+            text-align: center;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="canvas">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid m-2">
+                    <a class="navbar-brand" href="#">Welcome {{this_user.username}}</a>
+                </div>
+                <form class="d-flex me-2">
+                    <input class="form-control me-2" type="text" name="q" placeholder="ID or Username" aria-label="Search" value="{{ request.args.get('q','') }}">
+                    <button class="btn btn-outline-success me-2" type="submit">Search</button>
+                    <a href="/login" class="btn btn-primary">Logout</a>
+                </form>
+            </nav>
+            <div class="container mt-2">
+                <div class="headings">
+                    <h2>Registered Doctors</h2>
+                    <a href="{{ url_for('add_doctor') }}" class="btn btn-primary">Create</a>
+                </div>
+                {% for doctor in doctors %}
+                <div class="mt-3">
+                    <div class="headings">
+                        Dr. {{ doctor.username }}
+                        <div>
+                            <a href="{{ url_for('edit_doctor', doctor_id=doctor.id)  }}" class="btn btn-warning me-2">Edit</a>
+                            <a href="{{ url_for('delete_doctor', doctor_id=doctor.id) }}" class="btn btn-danger me-2">Delete</a>
+                            <a href="{{ url_for('blacklist_doctor', doctor_id=doctor.id) }}" class="btn btn-secondary me-2">blacklist</a>
+                            <a href="{{ url_for('unblacklist_doctor', doctor_id=doctor.id) }}" class="btn btn-secondary me-2">Unblacklist</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="container mt-2">
+                <h2>Registered Patients</h2>
+                {% for patient in patients %}
+                <div class="mt-3">
+                    <div class="headings">
+                        {{ patient.username }}
+                        <div>
+                            <a href="{{ url_for('editpatient_Admin', patient_id=patient.id)  }}" class="btn btn-warning me-2">Edit</a>
+                            <a href="{{ url_for('delete_patient', patient_id=patient.id) }}" class="btn btn-danger me-2">Delete</a>
+                            <a href="{{ url_for('blacklist_patient', patient_id=patient.id) }}" class="btn btn-secondary me-2">blacklist</a>
+                            <a href="{{ url_for('unblacklist_patient', patient_id=patient.id) }}" class="btn btn-secondary me-2">Unblacklist</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="content">
+                <h2 class="headings m-2">Upcoming Appoinments</h2>
+                <div id="table">
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col">Sr No.</th>
+                                <th scope="col">Patient Name</th>
+                                <th scope="col">Doctor Name</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Patient History</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if appointments %}
+                            {% for appointment in appointments %}
+                            <tr >
+                                <th scope="row">{{ appointment.id }}</th>
+                                <td>{{ appointment.patient.username }}</td>
+                                <td>{{ appointment.doctor.username }}</td>
+                                <td>{{ appointment.department.name }}</td>
+                                <td>
+                                    {% if appointment.status=='completed' %}
+                                        <span class="badge rounded-pill bg-success">Completed</span>
+                                    {% elif appointment.status=='cancelled' %}
+                                        <span class="badge rounded-pill bg-danger ">Cancelled</span>
+                                    {% else %}
+                                         <span class="badge rounded-pill bg-warning ">Upcoming</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if appointment.status not in ['completed','cancelled'] %}
+                                        <div class="headings">
+                                            <a href="{{ url_for('completed_admin',appointment_id=appointment.id) }}"
+                                                class="btn btn-success rounded-pill btn-sm me-2">complete</a>
+                                            <a href="{{ url_for('cancel_admin', appointment_id=appointment.id) }}"
+                                                class="btn btn-danger btn-sm rounded-pill">Cancel</a>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('patient_history_Admin', patient_id=appointment.patient.id) }}" class="btn btn-primary btn-sm rounded-pill">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>No upcoming appointments</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
