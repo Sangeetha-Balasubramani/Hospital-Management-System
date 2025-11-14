@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Add a new Doctor</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        #main,
+        #canvas {
+            height: 900px !important;
+        }
+
+        #form-body{
+            height: 840px;
+            width: 500px;
+            margin: 40px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="form-body">
+            <div class="headings">
+               <h1>Add a new Doctor</h1>
+               <a href="{{ url_for('admin_dashboard')}}" class="btn btn-primary">Go Back</a>
+            </div>
+            <form action="/add_doctor" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</Email></label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="Password" class="form-control" id="password" name="password">
+                </div>
+                <div class="mb-3">
+                    <label for="contact" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contact" name="contact_number">
+                </div>
+                <div class="mb-3">
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="dob" name="dob">
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Gender</label>
+                    <select class="form-control" name="gender">
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="department_id" class="form-label">Department</label>
+                    <select class="form-control" id="department_id" name="department_id">
+                        <option value="">Select Department</option>
+                        {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="years" class="form-label">experience(years)</label>
+                    <input type="number" class="form-control" id="years" name="experience">
+                </div>
+                <div class="text-center"> 
+                    <input type="submit" class="btn btn-primary" value="Create ">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
