@@ -45,7 +45,7 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm p-3 mb-4">
                 <div class="container-fluid">
                     <a class="navbar-brand fw-bold text-primary" href="#">HMS Admin Portal</a>
-                    <span class="navbar-text me-auto fw-semibold">Welcome, {{this_user.username}}</span>
+                    <span class="navbar-text me-auto fw-semibold">Welcome, {{this_user.username if this_user else 'Admin'}}</span>
                     <form class="d-flex align-items-center" method="GET" action="/admin">
                         <input class="form-control me-2" type="text" name="q" placeholder="ID or Username" aria-label="Search" value="{{ request.args.get('q','') }}">
                         <button class="btn btn-outline-success me-2" type="submit">Search</button>
@@ -71,7 +71,7 @@
                             {% if activities %}
                                 {% for act in activities %}
                                 <tr>
-                                    <td><code>{{ act.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</code></td>
+                                    <td><code>{{ act.timestamp.strftime('%Y-%m-%d %H:%M:%S') if act.timestamp else '' }}</code></td>
                                     <td><span class="badge bg-primary px-3 py-2">{{ act.username }}</span></td>
                                     <td><code>{{ act.endpoint }}</code></td>
                                     <td>
@@ -80,7 +80,7 @@
                                         </span>
                                     </td>
                                 </tr>
-                                endfor
+                                {% endfor %} <!-- Fixed Typo Tag Block Here -->
                             {% else %}
                                 <tr>
                                     <td colspan="4" class="text-muted py-3">No interactions tracked yet.</td>
@@ -181,6 +181,3 @@
                                             <span class="badge bg-danger px-2 py-1">Cancelled</span>
                                         {% else %}
                                              <span class="badge bg-warning text-dark px-2 py-1">Active</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
