@@ -3,6 +3,10 @@ from flask import current_app as app
 from .models import *
 from datetime import datetime, timedelta
 
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
+
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method=='POST':
