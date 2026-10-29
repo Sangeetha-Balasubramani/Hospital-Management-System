@@ -90,7 +90,18 @@ def admin_dashboard():
     doctors=doctors_query.all()
     patients=patients_query.all()
     appointments=Appointment.query.all()
-    return render_template('Admin_Dashboard.html',this_user=this_user,doctors=doctors,patients=patients,appointments=appointments,departments=departments)
+     # Fetch the 50 most recent actions taken on your platform
+    recent_activities = ActivityLog.query.order_by(ActivityLog.timestamp.desc()).limit(50).all()
+
+    return render_template(
+        'Admin_Dashboard.html',
+        this_user=this_user,
+        doctors=doctors,
+        patients=patients,
+        appointments=appointments,
+        departments=departments,
+        activities=recent_activities # Pass it right here
+    )
 
 @app.route('/add_doctor',methods=['GET','POST'])
 def add_doctor():
