@@ -54,43 +54,6 @@
                 </div>
             </nav>
 
-            <!-- Activity Logs Section -->
-            <div class="section-card">
-                <h2 class="fw-bold text-dark mb-3">📋 Live User Activity Metrics</h2>
-                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                    <table class="table table-striped table-hover border mb-0">
-                        <thead class="table-dark sticky-top">
-                            <tr>
-                                <th>Timestamp (UTC)</th>
-                                <th>User Account / Identity</th>
-                                <th>Accessed Page Endpoint</th>
-                                <th>Request Type</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if activities %}
-                                {% for act in activities %}
-                                <tr>
-                                    <td><code>{{ act.timestamp.strftime('%Y-%m-%d %H:%M:%S') if act.timestamp else '' }}</code></td>
-                                    <td><span class="badge bg-primary px-3 py-2">{{ act.username }}</span></td>
-                                    <td><code>{{ act.endpoint }}</code></td>
-                                    <td>
-                                        <span class="badge {% if act.method == 'POST' %}bg-success{% else %}bg-secondary{% endif %} px-3 py-2">
-                                            {{ act.method }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% endfor %} <!-- Fixed Typo Tag Block Here -->
-                            {% else %}
-                                <tr>
-                                    <td colspan="4" class="text-muted py-3">No interactions tracked yet.</td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
             <!-- Doctors Section -->
             <div class="section-card">
                 <div class="headings-row">
@@ -181,3 +144,33 @@
                                             <span class="badge bg-danger px-2 py-1">Cancelled</span>
                                         {% else %}
                                              <span class="badge bg-warning text-dark px-2 py-1">Active</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if appointment.status not in ['completed','cancelled'] %}
+                                            <a href="{{ url_for('completed_admin', appointment_id=appointment.id) }}" class="btn btn-success btn-sm px-2">Settle</a>
+                                            <a href="{{ url_for('cancel_admin', appointment_id=appointment.id) }}" class="btn btn-danger btn-sm px-2">Void</a>
+                                        {% else %}
+                                            <span class="text-muted small">Archived</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('patient_history_Admin', patient_id=appointment.patient_id) }}" class="btn btn-outline-primary btn-sm px-3">Open Logs</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-muted py-4">No historical or active appointments registered.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
