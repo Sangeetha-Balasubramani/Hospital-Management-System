@@ -7,33 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
-        body {
-            background-color: #f8f9fa;
+        #main,#canvas{
+            height:auto !important;
         }
-        #canvas {
-            width: 100%;
-            max-width: 1200px;
-            margin: auto;
-            padding: 1.5rem;
+        #canvas{
+            width:70%;
         }
-        td, th {
+        td{
+            text-align:center;
+            vertical-align:middle;
+        }
+        .badge{
+            display:inline-block; 
             text-align: center;
-            vertical-align: middle !important;
-        }
-        .section-card {
-            background-color: #ffffff;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
-        .headings-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
+            margin: auto;
         }
     </style>
 </head>
@@ -41,134 +28,107 @@
 <body>
     <div id="main">
         <div id="canvas">
-            <!-- Navigation Header -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm p-3 mb-4">
-                <div class="container-fluid">
-                    <a class="navbar-brand fw-bold text-primary" href="#">HMS Admin Portal</a>
-                    <span class="navbar-text me-auto fw-semibold">Welcome, {{this_user.username if this_user else 'Admin'}}</span>
-                    <form class="d-flex align-items-center" method="GET" action="/admin">
-                        <input class="form-control me-2" type="text" name="q" placeholder="ID or Username" aria-label="Search" value="{{ request.args.get('q','') }}">
-                        <button class="btn btn-outline-success me-2" type="submit">Search</button>
-                        <a href="/login" class="btn btn-danger">Logout</a>
-                    </form>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid m-2">
+                    <a class="navbar-brand" href="#">Welcome {{this_user.username}}</a>
                 </div>
+                <form class="d-flex me-2">
+                    <input class="form-control me-2" type="text" name="q" placeholder="ID or Username" aria-label="Search" value="{{ request.args.get('q','') }}">
+                    <button class="btn btn-outline-success me-2" type="submit">Search</button>
+                    <a href="/login" class="btn btn-primary">Logout</a>
+                </form>
             </nav>
-
-            <!-- Doctors Section -->
-            <div class="section-card">
-                <div class="headings-row">
-                    <h2 class="fw-bold text-dark mb-0">🩺 Registered Medical Officers</h2>
-                    <a href="{{ url_for('add_doctor') }}" class="btn btn-primary px-4">Add Doctor</a>
+            <div class="container mt-2">
+                <div class="headings">
+                    <h2>Registered Doctors</h2>
+                    <a href="{{ url_for('add_doctor') }}" class="btn btn-primary">Create</a>
                 </div>
-                {% if doctors %}
-                    <div class="row row-cols-1 row-cols-md-2 g-3">
-                        {% for doctor in doctors %}
-                        <div class="col">
-                            <div class="p-3 border rounded bg-light d-flex justify-content-between align-items-center">
-                                <span class="fw-bold text-secondary">Dr. {{ doctor.username }}</span>
-                                <div>
-                                    <a href="{{ url_for('edit_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-warning">Edit</a>
-                                    <a href="{{ url_for('delete_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                                    {% if doctor.is_blacklisted %}
-                                        <a href="{{ url_for('unblacklist_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-success">Activate</a>
-                                    {% else %}
-                                        <a href="{{ url_for('blacklist_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-secondary">Restrict</a>
-                                    {% endif %}
-                                </div>
-                            </div>
+                {% for doctor in doctors %}
+                <div class="mt-3">
+                    <div class="headings">
+                        Dr. {{ doctor.username }}
+                        <div>
+                            <a href="{{ url_for('edit_doctor', doctor_id=doctor.id)  }}" class="btn btn-warning me-2">Edit</a>
+                            <a href="{{ url_for('delete_doctor', doctor_id=doctor.id) }}" class="btn btn-danger me-2">Delete</a>
+                            <a href="{{ url_for('blacklist_doctor', doctor_id=doctor.id) }}" class="btn btn-secondary me-2">blacklist</a>
+                            <a href="{{ url_for('unblacklist_doctor', doctor_id=doctor.id) }}" class="btn btn-secondary me-2">Unblacklist</a>
                         </div>
-                        {% endfor %}
                     </div>
-                {% else %}
-                    <p class="text-muted py-2 mb-0">No registered doctors match your criteria.</p>
-                {% endif %}
-            </div>
-
-            <!-- Patients Section -->
-            <div class="section-card">
-                <div class="headings-row">
-                    <h2 class="fw-bold text-dark mb-0">👤 Registered Patients</h2>
                 </div>
-                {% if patients %}
-                    <div class="row row-cols-1 row-cols-md-2 g-3">
-                        {% for patient in patients %}
-                        <div class="col">
-                            <div class="p-3 border rounded bg-light d-flex justify-content-between align-items-center">
-                                <span class="fw-bold text-secondary">{{ patient.username }}</span>
-                                <div>
-                                    <a href="{{ url_for('editpatient_Admin', patient_id=patient.id) }}" class="btn btn-sm btn-warning">Edit</a>
-                                    <a href="{{ url_for('delete_patient', patient_id=patient.id) }}" class="btn btn-sm btn-danger">Delete</a>
-                                    {% if patient.is_blacklisted %}
-                                        <a href="{{ url_for('unblacklist_patient', patient_id=patient.id) }}" class="btn btn-sm btn-success">Unban</a>
-                                    {% else %}
-                                        <a href="{{ url_for('blacklist_patient', patient_id=patient.id) }}" class="btn btn-sm btn-secondary">Suspend</a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted py-2 mb-0">No patient profiles found.</p>
-                {% endif %}
+                {% endfor %}
             </div>
-
-            <!-- Appointments Section -->
-            <div class="section-card">
-                <h2 class="fw-bold text-dark mb-3">📅 Appointment Scheduling Registry</h2>
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle mb-0">
-                        <thead class="table-light">
+            <div class="container mt-2">
+                <h2>Registered Patients</h2>
+                {% for patient in patients %}
+                <div class="mt-3">
+                    <div class="headings">
+                        {{ patient.username }}
+                        <div>
+                            <a href="{{ url_for('editpatient_Admin', patient_id=patient.id)  }}" class="btn btn-warning me-2">Edit</a>
+                            <a href="{{ url_for('delete_patient', patient_id=patient.id) }}" class="btn btn-danger me-2">Delete</a>
+                            <a href="{{ url_for('blacklist_patient', patient_id=patient.id) }}" class="btn btn-secondary me-2">blacklist</a>
+                            <a href="{{ url_for('unblacklist_patient', patient_id=patient.id) }}" class="btn btn-secondary me-2">Unblacklist</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="content">
+                <h2 class="headings m-2">Upcoming Appoinments</h2>
+                <div id="table">
+                    <table class="table table-bordered text-center">
+                        <thead>
                             <tr>
-                                <th>Ref ID</th>
-                                <th>Patient Name</th>
-                                <th>Consulting Doctor</th>
-                                <th>Department</th>
-                                <th>Current Status</th>
-                                <th>Action Panel</th>
-                                <th>Medical Dossier</th>
+                                <th scope="col">Sr No.</th>
+                                <th scope="col">Patient Name</th>
+                                <th scope="col">Doctor Name</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Patient History</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% if appointments %}
-                                {% for appointment in appointments %}
-                                <tr>
-                                    <td><strong>#{{ appointment.id }}</strong></td>
-                                    <td>{{ appointment.patient.username if appointment.patient else 'Unassigned' }}</td>
-                                    <td>Dr. {{ appointment.doctor.username if appointment.doctor else 'Unassigned' }}</td>
-                                    <td><span class="badge bg-light text-dark border">{{ appointment.department.name if appointment.department else 'General' }}</span></td>
-                                    <td>
-                                        {% if appointment.status=='completed' %}
-                                            <span class="badge bg-success px-2 py-1">Completed</span>
-                                        {% elif appointment.status=='cancelled' %}
-                                            <span class="badge bg-danger px-2 py-1">Cancelled</span>
-                                        {% else %}
-                                             <span class="badge bg-warning text-dark px-2 py-1">Active</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if appointment.status not in ['completed','cancelled'] %}
-                                            <a href="{{ url_for('completed_admin', appointment_id=appointment.id) }}" class="btn btn-success btn-sm px-2">Settle</a>
-                                            <a href="{{ url_for('cancel_admin', appointment_id=appointment.id) }}" class="btn btn-danger btn-sm px-2">Void</a>
-                                        {% else %}
-                                            <span class="text-muted small">Archived</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{{ url_for('patient_history_Admin', patient_id=appointment.patient_id) }}" class="btn btn-outline-primary btn-sm px-3">Open Logs</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="7" class="text-muted py-4">No historical or active appointments registered.</td>
-                                </tr>
-                            {% endif %}
+                            {% for appointment in appointments %}
+                            <tr >
+                                <th scope="row">{{ appointment.id }}</th>
+                                <td>{{ appointment.patient.username }}</td>
+                                <td>{{ appointment.doctor.username }}</td>
+                                <td>{{ appointment.department.name }}</td>
+                                <td>
+                                    {% if appointment.status=='completed' %}
+                                        <span class="badge rounded-pill bg-success">Completed</span>
+                                    {% elif appointment.status=='cancelled' %}
+                                        <span class="badge rounded-pill bg-danger ">Cancelled</span>
+                                    {% else %}
+                                         <span class="badge rounded-pill bg-warning ">Upcoming</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if appointment.status not in ['completed','cancelled'] %}
+                                        <div class="headings">
+                                            <a href="{{ url_for('completed_admin',appointment_id=appointment.id) }}"
+                                                class="btn btn-success rounded-pill btn-sm me-2">complete</a>
+                                            <a href="{{ url_for('cancel_admin', appointment_id=appointment.id) }}"
+                                                class="btn btn-danger btn-sm rounded-pill">Cancel</a>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('patient_history_Admin', patient_id=appointment.patient.id) }}" class="btn btn-primary btn-sm rounded-pill">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>No upcoming appointments</td>
+                            </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </body>
