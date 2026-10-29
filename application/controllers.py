@@ -7,23 +7,6 @@ from datetime import datetime, timedelta
 def home():
     return redirect(url_for('login'))
 
-# Hook to capture and record request context details automatically
-@app.before_request
-def log_user_activity():
-    # If a route doesn't match an active user, it captures them as a guest visitor
-    # Note: If you implement flask-login later, replace this with current_user
-    current_username = request.form.get('username') if request.method == 'POST' else "Guest"
-    
-    # Exclude tracking for static files (CSS/Images) so your database doesn't get flooded
-    if not request.path.startswith('/static'):
-        log_entry = ActivityLog(
-            username=current_username,
-            endpoint=request.path,
-            method=request.method
-        )
-        db.session.add(log_entry)
-        db.session.commit()
-
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method=='POST':
